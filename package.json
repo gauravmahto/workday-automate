@@ -1,0 +1,16 @@
+{
+  "name": "workday",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-xlsx": "0.21.2",
+    "puppeteer": "20.1.2"
+  }
+}
