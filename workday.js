@@ -13,13 +13,14 @@ const excelData = readData(resolve(__dirname, 'data.xlsx'));
 const parsedRows = parseExcelData(excelData[0].data);
 
 // #region
-const password = 'SetThisAndDon\'tCommit';
+const password = 'P@$$w0rd@1234';
 // #endregion
 
 (async () => {
 
   const browser = await puppeteer.launch({
     headless: false,
+    defaultViewport: null,
     args: [
       '--start-maximized' // you can also use '--start-fullscreen'
     ]
@@ -29,24 +30,38 @@ const password = 'SetThisAndDon\'tCommit';
 
   await page.goto('https://wd3.myworkday.com/aristocrat/d/home.htmld');
 
-  await page.waitForSelector('[name=username]');
+  await page.waitForSelector('[name=identifier]');
 
   // Set screen size
   await page.setViewport({ width: 1740, height: 1080 });
 
   // Type into search box
-  await page.type('[name=username]', 'gaurav.mahto2@anaxi.com');
+  // await page.type('[name=username]', 'gaurav.mahto2@anaxi.com');
+  await page.type('[name=identifier]', 'gaurav.mahto2@anaxi.com');
 
-  await page.click('#idp-discovery-submit');
+  // await page.click('#idp-discovery-submit');
+  await page.click('[value="Next"]');
 
-  await page.waitForSelector('#okta-signin-password');
-  await page.type('#okta-signin-password', password);
+  // await page.waitForSelector('#okta-signin-password');
+  await page.waitForSelector('[name="credentials.passcode"]');
+  // await page.type('#okta-signin-password', password);
+  await page.type('[name="credentials.passcode"]', password);
 
-  await page.click('#okta-signin-submit');
+  // await page.click('#okta-signin-submit');
+  await page.click('[value="Verify"]');
 
-  await waitAndClick(page, '[value="Send Push"]');
+  // await waitAndClick(page, '[value="Send Push"]');
+  await waitAndClick(page, '[data-se="okta_verify-push"] a');
 
-  await waitAndClick(page, '[data-uxi-element-id="app-header-inbox-button"]');
+  // await waitAndClick(page, '[data-uxi-element-id="app-header-inbox-button"]');
+  await waitAndClick(page, '[data-automation-id="globalNavButton"]');
+  await waitForElement(page, '[data-automation-id="globalNav"][aria-hidden="false"]');
+  await waitFor(1500);
+  // await waitForInnerText(page, '[aria-label="Talent and Performance"] [data-automation-id="globalNavAppItemLabel"] span span span', 'Talent and Performance');
+  await waitAndClick(page, 'a[aria-label="Talent and Performance"]');
+  await waitFor(1500);
+  await waitAndClick(page, '[title="My Individual Goals"]');
+  await waitFor(1500);
 
   const excelData = readData(resolve(__dirname, 'data.xlsx'));
   const [headers, parsedRows] = parseExcelData(excelData[0].data);
@@ -89,6 +104,12 @@ async function waitAndClick(page, selector, options) {
 
   await waitForElement(page, selector, options);
   await page.click(selector);
+
+}
+
+async function waitForInnerText(page, selector, text) {
+
+  await page.waitForFunction(_ => document.querySelector(selector)?.textContent === text);
 
 }
 
